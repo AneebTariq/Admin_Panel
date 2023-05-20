@@ -1,4 +1,3 @@
-import 'package:analog_clock/analog_clock.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -78,15 +77,22 @@ class _DeskhomeState extends State<Deskhome> {
                 const SizedBox(
                   height: 40,
                 ),
+                // services requests
+                const ListTile(
+                  title: Text(
+                    'Services Requests',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
                 AspectRatio(
-                  aspectRatio: 4,
+                  aspectRatio: 5,
                   child: SizedBox(
                     width: double.infinity,
                     child: GridView.builder(
-                        itemCount: 4,
+                        itemCount: 5,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4),
+                                crossAxisCount: 5),
                         itemBuilder: (context, index) {
                           return Padding(
                             padding:
@@ -103,6 +109,13 @@ class _DeskhomeState extends State<Deskhome> {
                 ),
                 const SizedBox(
                   height: 20,
+                ),
+                // Completed Requests
+                const ListTile(
+                  title: Text(
+                    'Services Requests Completed',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 Expanded(
                   child: ListView.builder(
@@ -123,42 +136,6 @@ class _DeskhomeState extends State<Deskhome> {
               ],
             ),
           ),
-          Expanded(
-              child: Column(
-            children: [
-              Container(
-                height: 500,
-                width: 400,
-                color: Colors.grey[500],
-                child: Row(
-                  verticalDirection: VerticalDirection.down,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 250, left: 40),
-                      child: AnalogClock(
-                        hourHandColor: Colors.white,
-                        minuteHandColor: Colors.white,
-                        secondHandColor: Colors.redAccent,
-                        tickColor: Colors.white,
-                        digitalClockColor: Colors.white,
-                        numberColor: Colors.white,
-                        useMilitaryTime: false,
-                        isLive: true,
-                        width: 200.0,
-                        datetime: DateTime.now(),
-                        key: const GlobalObjectKey(2),
-                        decoration: const BoxDecoration(
-                          color: Colors.black,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                    //calendar
-                  ],
-                ),
-              )
-            ],
-          )),
         ],
       ),
     );
