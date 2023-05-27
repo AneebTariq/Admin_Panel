@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'addservice.dart';
 import 'deskhome.dart';
@@ -12,6 +17,10 @@ class Myservices extends StatefulWidget {
 }
 
 class _MyservicesState extends State<Myservices> {
+
+  final FirebaseFirestore fireStore = FirebaseFirestore.instance;
+
+  XFile? selectedImage;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +84,7 @@ class _MyservicesState extends State<Myservices> {
                   padding: const EdgeInsets.only(left: 20.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.to(() => const Addservice());
+                      Get.to(() =>  Addservice());
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey[900],
@@ -84,7 +93,90 @@ class _MyservicesState extends State<Myservices> {
                       'Add Service',
                       style: TextStyle(fontSize: 20),
                     ),
-                  ),
+                  )),
+                // 4 box
+                const SizedBox(
+                  height: 40,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    selectedImage!=null?
+                        Container(
+                            height: 200,
+                            width: 200,
+                            child: Image.network(selectedImage!.path))
+                        :  InkWell(
+                      onTap:() async {
+                        final ImagePicker picker = ImagePicker();
+
+                        final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+                        final XFile? photo = await picker.pickImage(source: ImageSource.camera);
+
+
+                        if (kIsWeb) {
+                          Image.network(image!.path);
+                          setState(() {
+                            selectedImage=image;
+                          });
+
+                        } else {
+                          Image.file(File(image!.path));
+                          setState(() {
+                            selectedImage=image;
+                          });
+                        }
+                      },
+                      child: Container(
+                        height: 200,
+                        width: 200,
+                        color: Colors.white,
+                        child: const Center(
+                          child: Text('Select Image'),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextFormField(
+                            keyboardType: TextInputType.name,
+                            decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.grey,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.grey,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              hintText: 'Enter Services Name',
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[900],
+                            ),
+                            child: const Text('Save Service'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 40,
