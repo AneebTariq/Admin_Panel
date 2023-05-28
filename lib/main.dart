@@ -1,5 +1,6 @@
 // import 'dart:io';
-import 'package:admin_panel/ui/desktopscafold/deskhome.dart';
+
+import 'package:admin_panel/ui/loginscreen.dart';
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:flutter/foundation.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
     return const GetMaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      home: Deskhome(),
+      home: AdminLogin(),
     );
   }
 }

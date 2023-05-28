@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "355123910535",
+    "project_id": "instant-services-28b10",
+    "storage_bucket": "instant-services-28b10.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:355123910535:android:265662224d07a145af2522",
+        "android_client_info": {
+          "package_name": "com.example.instant_services"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "355123910535-ta686fe4q5p52rt96edug66po1aite5r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.instant_services",
+            "certificate_hash": "4d74cbfd899c622709d5856042357770a3b87cc2"
+          }
+        },
+        {
+          "client_id": "355123910535-qi748jhmstr5pjfcl8ppgg082jugjoj9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBd7Z-NggbcaVGwXS9d9bqjbY_Zrc2-xE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "355123910535-qi748jhmstr5pjfcl8ppgg082jugjoj9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
