@@ -1,33 +1,34 @@
 import 'package:admin_panel/repository/homecontroller.dart';
-import 'package:admin_panel/ui/signup.dart';
+import 'package:admin_panel/ui/loginscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../models/usermodel.dart';
 import '../repository/sharedprefrence.dart';
 import 'desktopscafold/deskhome.dart';
 
-class AdminLogin extends StatefulWidget {
-  const AdminLogin({super.key});
+class AdminSignup extends StatefulWidget {
+  const AdminSignup({super.key});
 
   @override
-  State<AdminLogin> createState() => _AdminLoginState();
+  State<AdminSignup> createState() => _AdminSignupState();
 }
 
-class _AdminLoginState extends State<AdminLogin> {
-  HomeController homeController = Get.put(HomeController());
+class _AdminSignupState extends State<AdminSignup> {
+  HomeController homecontroller = Get.put(HomeController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        title: const Text('L O G I N'),
+        title: const Text('S I G N    U P'),
         backgroundColor: Colors.grey[900],
         centerTitle: true,
       ),
       body: Form(
-        key: homeController.loginFormKey,
+        key: homecontroller.registerFormKey,
         child: Row(
           children: [
             Expanded(
@@ -43,7 +44,7 @@ class _AdminLoginState extends State<AdminLogin> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: TextFormField(
-                          controller: homeController.emailController,
+                          controller: homecontroller.emailController,
                           decoration: InputDecoration(
                               hintText: 'Enter Email',
                               border: OutlineInputBorder(
@@ -66,7 +67,7 @@ class _AdminLoginState extends State<AdminLogin> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: TextFormField(
-                          controller: homeController.passwordController,
+                          controller: homecontroller.passwordController,
                           decoration: InputDecoration(
                               hintText: 'Enter Password',
                               border: OutlineInputBorder(
@@ -92,48 +93,50 @@ class _AdminLoginState extends State<AdminLogin> {
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: ElevatedButton(
                             onPressed: () async {
-                              homeController.checkLogin();
+                              homecontroller.checkregister();
                               try {
-                                // ignore: unused_local_variable
                                 final credential = await FirebaseAuth.instance
-                                    .signInWithEmailAndPassword(
-                                  email: homeController.emailController.text,
+                                    .createUserWithEmailAndPassword(
+                                  email: homecontroller.emailController.text,
                                   password:
-                                      homeController.passwordController.text,
+                                      homecontroller.passwordController.text,
                                 );
                                 await SharedPrefClient().setUser(UserModel(
                                     credential.user!.uid,
                                     credential.user!.email!));
                                 Get.offAll(() => const Deskhome());
                               } on FirebaseAuthException catch (e) {
-                                if (e.code == 'user-not-found') {
-                                  Get.snackbar('Wrong',
-                                      ' Please Enter Correct Email/Password ',
+                                if (e.code == 'weak-password') {
+                                  if (kDebugMode) {
+                                    print('The password provided is too weak.');
+                                  }
+                                  Get.snackbar('Weak Password',
+                                      ' Enter Strong Password ',
                                       backgroundColor: Colors.red,
                                       colorText: Colors.white,
                                       snackPosition: SnackPosition.BOTTOM);
-                                  if (kDebugMode) {
-                                    print('No user found for that email.');
-                                  }
-                                } else if (e.code == 'wrong-password') {
+                                } else if (e.code == 'email-already-in-use') {
                                   if (kDebugMode) {
                                     print(
-                                        'Wrong password provided for that user.');
+                                        'The account already exists for that email.');
                                   }
-                                  Get.snackbar('Wrong Password',
-                                      ' Enter Correct Password ',
+                                  Get.snackbar(
+                                      'Wrong Email', ' Enter another Email ',
                                       backgroundColor: Colors.red,
                                       colorText: Colors.white,
                                       snackPosition: SnackPosition.BOTTOM);
+                                }
+                              } catch (e) {
+                                if (kDebugMode) {
+                                  print(e);
                                 }
                               }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.grey[900],
-                              maximumSize: const Size(360, 100),
                             ),
                             child: const Text(
-                              'Login',
+                              'Sign Up',
                               style: TextStyle(fontSize: 28),
                             ),
                           ),
@@ -145,13 +148,13 @@ class _AdminLoginState extends State<AdminLogin> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text("Don't Have Account ?"),
+                          const Text("Already Have Account ."),
                           TextButton(
                               onPressed: () {
-                                Get.offAll(() => const AdminSignup());
+                                Get.offAll(() => const AdminLogin());
                               },
                               child: const Text(
-                                'Sign Up',
+                                'Login',
                                 style: TextStyle(color: Colors.blue),
                               ))
                         ],
@@ -166,7 +169,7 @@ class _AdminLoginState extends State<AdminLogin> {
               height: 700,
               width: 900,
               child: Image.asset(
-                'assets/images/2.jpg',
+                'assets/images/1.jpg',
                 width: 900,
                 height: 700,
               ),

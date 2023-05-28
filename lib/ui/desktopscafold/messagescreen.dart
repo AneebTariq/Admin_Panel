@@ -10,6 +10,13 @@ class Messagescreen extends StatefulWidget {
 class _MessagescreenState extends State<Messagescreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      backgroundColor: Colors.grey[300],
+      appBar: AppBar(
+        backgroundColor: Colors.grey[900],
+        centerTitle: true,
+        title: const Text('Messages'),
+      ),
+    );
   }
 }
