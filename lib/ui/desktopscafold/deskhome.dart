@@ -1,6 +1,9 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'package:admin_panel/ui/desktopscafold/feedback.dart';
 import 'package:admin_panel/ui/desktopscafold/history.dart';
 import 'package:admin_panel/ui/desktopscafold/messagescreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,6 +17,13 @@ class Deskhome extends StatefulWidget {
 }
 
 class _DeskhomeState extends State<Deskhome> {
+  final Query<Map<String, dynamic>> usersCollection =
+      FirebaseFirestore.instance.collection('ServiceRequest');
+
+  final Query<Map<String, dynamic>> aprovedrequest = FirebaseFirestore.instance
+      .collection('ServiceRequest')
+      .where('status', isEqualTo: 'aproved');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,54 +109,245 @@ class _DeskhomeState extends State<Deskhome> {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
-                AspectRatio(
-                  aspectRatio: 5,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: GridView.builder(
-                        itemCount: 5,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 5),
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 15.0),
-                            child: Container(
-                              color: Colors.white,
-                              child: const Center(
-                                child: Text('Requests For Services'),
-                              ),
-                            ),
-                          );
-                        }),
-                  ),
+                StreamBuilder<QuerySnapshot>(
+                  stream: usersCollection.snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return AspectRatio(
+                      aspectRatio: 5,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: GridView.builder(
+                            itemCount: snapshot.data!.docs.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 5),
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                child: Card(
+                                  // color: Colors.white,
+                                  child: SizedBox(
+                                    height: 100,
+                                    child: ListView(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20.0, vertical: 10),
+                                          child: Text(
+                                            snapshot.data!.docs[index]
+                                                ['user_name'],
+                                          ),
+                                        ),
+                                        ListTile(
+                                          title: Text(
+                                            'service: ' +
+                                                snapshot.data!.docs[index]
+                                                    ['service_name'],
+                                          ),
+                                          subtitle: Text(snapshot.data!
+                                                  .docs[index]['service_date'] +
+                                              "  " +
+                                              snapshot.data!.docs[index]
+                                                  ['service_time']),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10.0),
+                                          child: Text(
+                                            'Detail: ' +
+                                                snapshot.data!.docs[index]
+                                                    ['service_detail'],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  String requeststatus =
+                                                      'aproved';
+                                                  String mydate =
+                                                      snapshot.data!.docs[index]
+                                                          ['service_date'];
+                                                  String mytime =
+                                                      snapshot.data!.docs[index]
+                                                          ['service_time'];
+                                                  String myemail =
+                                                      snapshot.data!.docs[index]
+                                                          ['user_email'];
+                                                  FirebaseFirestore.instance
+                                                      .collection(
+                                                          'ServiceRequest')
+                                                      .where('service_date',
+                                                          isEqualTo: mydate)
+                                                      .where('service_time',
+                                                          isEqualTo: mytime)
+                                                      .where('user_email',
+                                                          isEqualTo: myemail)
+                                                      .get()
+                                                      .then((querySnapshot) {
+                                                    querySnapshot.docs
+                                                        // ignore: avoid_function_literals_in_foreach_calls
+                                                        .forEach(
+                                                            (documentSnapshot) {
+                                                      documentSnapshot.reference
+                                                          .update({
+                                                        'status': requeststatus
+                                                      });
+                                                    });
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Colors.greenAccent,
+                                                ),
+                                                child: const Text('Accept'),
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  String requeststatus =
+                                                      'rejected';
+                                                  String mydate =
+                                                      snapshot.data!.docs[index]
+                                                          ['service_date'];
+                                                  String mytime =
+                                                      snapshot.data!.docs[index]
+                                                          ['service_time'];
+                                                  String myemail =
+                                                      snapshot.data!.docs[index]
+                                                          ['user_email'];
+                                                  FirebaseFirestore.instance
+                                                      .collection(
+                                                          'ServiceRequest')
+                                                      .where('service_date',
+                                                          isEqualTo: mydate)
+                                                      .where('service_time',
+                                                          isEqualTo: mytime)
+                                                      .where('user_email',
+                                                          isEqualTo: myemail)
+                                                      .get()
+                                                      .then((querySnapshot) {
+                                                    querySnapshot.docs
+                                                        // ignore: avoid_function_literals_in_foreach_calls
+                                                        .forEach(
+                                                            (documentSnapshot) {
+                                                      documentSnapshot.reference
+                                                          .update({
+                                                        'status': requeststatus
+                                                      });
+                                                    });
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Colors.redAccent,
+                                                ),
+                                                child: const Text('Reject'),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                      ),
+                    );
+                  },
                 ),
+
                 const SizedBox(
                   height: 20,
                 ),
-                // Completed Requests
+                // Aproved Requests
                 const ListTile(
                   title: Text(
-                    'Services Requests Completed',
+                    'Aproved Service Requests',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                      itemCount: 4,
-                      itemBuilder: (context, indes) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            height: 80,
-                            color: Colors.white,
-                            child: const Center(
-                              child: Text('Completed Request'),
-                            ),
-                          ),
-                        );
-                      }),
+                // Aproved list
+                StreamBuilder<QuerySnapshot>(
+                  stream: aprovedrequest.snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Expanded(
+                      child: ListView.builder(
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Card(
+                                  child: ListTile(
+                                leading: Text(
+                                    snapshot.data!.docs[index]['user_name']),
+                                title: Text('Service Name: ' +
+                                    snapshot.data!.docs[index]['service_name']),
+                                subtitle: Text('Date & Time: ' +
+                                    snapshot.data!.docs[index]['service_date'] +
+                                    "  " +
+                                    snapshot.data!.docs[index]['service_time']),
+                                trailing: ElevatedButton(
+                                    onPressed: () {
+                                      String requeststatus = 'completed';
+                                      String mydate = snapshot.data!.docs[index]
+                                          ['service_date'];
+                                      String mytime = snapshot.data!.docs[index]
+                                          ['service_time'];
+                                      String myemail = snapshot
+                                          .data!.docs[index]['user_email'];
+                                      FirebaseFirestore.instance
+                                          .collection('ServiceRequest')
+                                          .where('service_date',
+                                              isEqualTo: mydate)
+                                          .where('service_time',
+                                              isEqualTo: mytime)
+                                          .where('user_email',
+                                              isEqualTo: myemail)
+                                          .get()
+                                          .then((querySnapshot) {
+                                        querySnapshot.docs
+                                            // ignore: avoid_function_literals_in_foreach_calls
+                                            .forEach((documentSnapshot) {
+                                          documentSnapshot.reference.update(
+                                              {'status': requeststatus});
+                                        });
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.greenAccent,
+                                    ),
+                                    child: const Text('Completed')),
+                              )),
+                            );
+                          }),
+                    );
+                  },
                 ),
               ],
             ),
