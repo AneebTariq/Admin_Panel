@@ -1,15 +1,20 @@
 import 'dart:io';
 
+import 'package:admin_panel/ui/desktopscafold/services.dart';
 import 'package:admin_panel/ui/desktopscafold/singleton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:path/path.dart' as path;
 import 'package:path/path.dart';
+
+import '../../controller/service_controller.dart';
 
 class Addservice extends StatefulWidget {
   const Addservice({super.key});
@@ -46,14 +51,13 @@ class _AddserviceState extends State<Addservice> {
     //dropdownvalue=snapshot.docs.first.id;
     for (var doc in snapshot.docs) {
       print(doc.id);
-      // print(doc);
-      //  print(doc.get('name'));
-      // Create a DropdownMenuItem and add it to the list
+
       services.add(ServiceModel(doc.id, doc.get('name')));
     }
 
     Singleton.instance.selectedService = services.first;
     Singleton.instance.selectedIndex = services.first.id;
+
 
 
     return services;
@@ -79,117 +83,182 @@ class _AddserviceState extends State<Addservice> {
               return Text("error in koadinb data");
             }
             if (snapshot.hasData) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  DropdownButton<ServiceModel>(
-                    value: Singleton.instance.selectedService,
-                    hint: Text('Select a service'),
-                    onChanged: (ServiceModel? newValue) {
-                      setState(() {
-                        Singleton.instance.selectedIndex = newValue?.id;
-                        Singleton.instance.selectedService = newValue;
-                        print(Singleton.instance.selectedIndex);
-                        print(Singleton.instance.selectedService?.serviceName);
-                      });
-                    },
-                    items: services.map<DropdownMenuItem<ServiceModel>>(
-                        (ServiceModel service) {
-                      return DropdownMenuItem<ServiceModel>(
-                        value: service,
-                        child: Text(service.serviceName),
-                      );
-                    }).toList(),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  selectedImage != null
-                      ? SizedBox(
+              return Center(
+
+                child: Container(
+                  width: MediaQuery.of(context).size.width*0.35,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Upload Image:",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      SizedBox(height: 20,),
+                      selectedImage != null
+                          ? SizedBox(
                           height: 200,
                           width: 200,
                           child: Image.network(selectedImage!.path))
-                      : InkWell(
-                          onTap: () async {
-                            final ImagePicker picker = ImagePicker();
+                          : InkWell(
+                        onTap: () async {
+                          final ImagePicker picker = ImagePicker();
 
-                            final XFile? image = await picker.pickImage(
-                                source: ImageSource.gallery);
+                          final XFile? image = await picker.pickImage(
+                              source: ImageSource.gallery);
 
-                    //  final XFile? photo = await picker.pickImage(source: ImageSource.camera);
+                          //  final XFile? photo = await picker.pickImage(source: ImageSource.camera);
 
-                            if (kIsWeb) {
-                              Image.network(image!.path);
-                              setState(() {
-                                selectedImage = image;
-                              });
-                            } else {
-                              Image.file(File(image!.path));
-                              setState(() {
-                                selectedImage = image;
-                              });
-                            }
-                          },
-                          child: Container(
-                            height: 200,
-                            width: 200,
-                            color: Colors.white,
-                            child: const Center(
-                              child: Text('Select Image'),
-                            ),
-                          ),
-                        ),
-                  SizedBox(
-                    height: 200,
-                    width: 200,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextFormField(
-                          controller: _serviceController,
-                          keyboardType: TextInputType.name,
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Colors.grey,
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Colors.grey,
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            hintText: 'Enter Services Name',
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            String serviceId = createIdFromDateTime();
-                            String category = selectedServiceId!;
-                            String serviceName = _serviceController.text;
-                            String serviceImage = await uploadFile();
-                            ServiceController().addService(
-                                Singleton.instance.selectedService!, {
-                              'product_id': serviceId,
-                              'product_image': serviceImage,
-                              'product_name': serviceName
+                          if (kIsWeb) {
+                            Image.network(image!.path);
+                            setState(() {
+                              selectedImage = image;
                             });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[900],
+                          } else {
+                            Image.file(File(image!.path));
+                            setState(() {
+                              selectedImage = image;
+                            });
+                          }
+                        },
+                        child: Container(
+                          height: 200,
+                          width: 200,
+                          color: Colors.white,
+                          child: const Center(
+                            child: Text('Select Image'),
                           ),
-                          child: Text('Save Service'),
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 20,),
+                      Text("Select category:",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                      ),
+                      SizedBox(height: 20,),
+                      Container(
+
+                        //alignment: Alignment.center,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, item){
+
+                             return InkWell(
+                               onTap: (){
+                                 setState(() {
+
+
+                                 Singleton.instance.selectedIndex = snapshot.data![item].id;
+                                 selectedServiceId=snapshot.data![item].id;
+                                 Singleton.instance.selectedService = snapshot.data![item];
+                                 print(Singleton.instance.selectedIndex);
+                                 print(Singleton.instance.selectedService?.serviceName);
+                                 });
+                               },
+                               child: Container(
+margin: EdgeInsets.all(4),
+
+                                 decoration: BoxDecoration(
+                                   border: Border.all(
+                                     color: selectedServiceId==snapshot.data![item].id?Colors.blue:Colors.white
+                                   ),
+                                   color: Colors.white
+                                 ),
+                            //padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(snapshot.data![item].serviceName),
+                            ),
+                          ),
+                             );
+                        }),
+                      ),
+                      // DropdownButton<ServiceModel>(
+                      //   value: Singleton.instance.selectedService,
+                      //   hint: Text('Select a service'),
+                      //   onChanged: (ServiceModel? newValue) {
+                      //     setState(() {
+                      //       Singleton.instance.selectedIndex = newValue?.id;
+                      //       Singleton.instance.selectedService = newValue;
+                      //       print(Singleton.instance.selectedIndex);
+                      //       print(Singleton.instance.selectedService?.serviceName);
+                      //     });
+                      //   },
+                      //   items: services.map<DropdownMenuItem<ServiceModel>>(
+                      //       (ServiceModel service) {
+                      //     return DropdownMenuItem<ServiceModel>(
+                      //       value: service,
+                      //       child: Text(service.serviceName),
+                      //     );
+                      //   }).toList(),
+                      // ),
+                      SizedBox(
+                        height: 30,
+                      ),
+
+                      SizedBox(
+
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextFormField(
+                              controller: _serviceController,
+                              keyboardType: TextInputType.name,
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.grey,
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.grey,
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                hintText: 'Enter Services Name',
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              height: 40,
+                              width: MediaQuery.of(context).size.width*0.35,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  String serviceId = createIdFromDateTime();
+                                  String category = selectedServiceId!;
+                                  String serviceName = _serviceController.text;
+                                  String serviceImage = await uploadFile();
+                                bool check= await ServiceController().addService(
+                                      Singleton.instance.selectedService!, {
+                                    'product_id': serviceId,
+                                    'product_image': serviceImage,
+                                    'product_name': serviceName
+                                  });
+                                  if(check){
+                                    Fluttertoast.showToast(msg: "Service added Successfully!");
+                                    Get.offAll(()=>Myservices());
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey[900],
+                                ),
+                                child: Text('Save Service'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               );
             }
             return Center(child: CircularProgressIndicator());

@@ -1,5 +1,8 @@
+import 'package:admin_panel/repository/sharedprefrence.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+
+import '../ui/desktopscafold/deskhome.dart';
 
 class HomeController extends GetxController {
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
@@ -13,8 +16,16 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    isUserCached();
     emailController = TextEditingController();
     passwordController = TextEditingController();
+  }
+
+  isUserCached() async {
+    bool isLogin=await SharedPrefClient().isUserLoggedIn();
+    if(isLogin){
+      Get.offAll(()=>Deskhome());
+    }
   }
 
   @override
