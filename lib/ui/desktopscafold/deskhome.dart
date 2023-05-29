@@ -1,3 +1,6 @@
+import 'package:admin_panel/ui/desktopscafold/feedback.dart';
+import 'package:admin_panel/ui/desktopscafold/history.dart';
+import 'package:admin_panel/ui/desktopscafold/messagescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -40,24 +43,36 @@ class _DeskhomeState extends State<Deskhome> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.message_outlined),
-                  title: const Text('N O T I F I C A T I O N S'),
-                  onTap: () {},
+                  title: const Text('M E S S A G E S'),
+                  onTap: () {
+                    Get.to(() => const Messagescreen());
+                  },
                 ),
                 ListTile(
                   leading: const Icon(Icons.history),
                   title: const Text('H I S T O R Y'),
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(() => const ServicesHistory());
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.feedback_outlined),
+                  title: const Text('F E E D B A C K S'),
+                  onTap: () {
+                    Get.to(() => const ServiceFeedback());
+                  },
                 ),
                 ListTile(
                   leading: const Icon(Icons.room_service),
                   title: const Text('S E R V I C E S'),
                   onTap: () {
-                    Get.to(() =>  Myservices());
+                    Get.to(() => const Myservices());
                   },
                 ),
               ],
             ),
           ),
+
           //body
           Expanded(
             flex: 3,

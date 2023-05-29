@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:admin_panel/controller/service_controller.dart';
 import 'package:admin_panel/ui/desktopscafold/singleton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -56,7 +55,11 @@ class _AddserviceState extends State<Addservice> {
     Singleton.instance.selectedService = services.first;
     Singleton.instance.selectedIndex = services.first.id;
 
+
     return services;
+
+
+
   }
 
   final _serviceController = TextEditingController();
@@ -114,7 +117,7 @@ class _AddserviceState extends State<Addservice> {
                             final XFile? image = await picker.pickImage(
                                 source: ImageSource.gallery);
 
-                            //  final XFile? photo = await picker.pickImage(source: ImageSource.camera);
+                    //  final XFile? photo = await picker.pickImage(source: ImageSource.camera);
 
                             if (kIsWeb) {
                               Image.network(image!.path);
@@ -192,6 +195,27 @@ class _AddserviceState extends State<Addservice> {
             return Center(child: CircularProgressIndicator());
           }),
     );
+  }
+
+  Future<void> saveData(Map<String,dynamic> productData) async {
+    try {
+      CollectionReference serviceRef =
+      FirebaseFirestore.instance.collection('services');
+      DocumentReference serviceDocRef = serviceRef.doc(Singleton.instance.selectedService!.id);
+      DocumentSnapshot documentSnapshot = await serviceDocRef.get();
+      if (documentSnapshot.exists) {
+       // documentSnapshot.get(field)
+        FieldPath fieldPath = FieldPath(const ['product']);
+        List<dynamic> existingProducts = documentSnapshot.get(fieldPath) as List<dynamic>?? [];
+        List<dynamic> updatedProducts = [...existingProducts, productData];
+
+        await serviceDocRef.set({'id':Singleton.instance.selectedService!.id,'name':Singleton.instance.selectedService!.serviceName,'product': updatedProducts});
+      }
+
+     // await serviceDocRef.set({'products': productData});
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   String createIdFromDateTime() {
