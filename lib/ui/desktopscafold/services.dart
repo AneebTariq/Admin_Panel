@@ -41,7 +41,7 @@ class _MyservicesState extends State<Myservices> {
         future: controller.fetchServices(),
         builder: (context, snapshot) {
           if(snapshot.hasError){
-            return const Center(child: Text("Error in getting services"),);
+            return  const Center(child: Text("Error in getting services"),);
           }else if(snapshot.hasData) {
             return Row(
               children: [
@@ -140,13 +140,13 @@ class _MyservicesState extends State<Myservices> {
                                   Padding(
                                     padding: const EdgeInsets.only(left:30.0),
                                     child: Text(snapshot.data![index].name,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18
                                     ),
                                     ),
                                   ),
-                                  SizedBox(height: 10,),
+                                  const SizedBox(height: 10,),
                                   ListView.builder(
                                     shrinkWrap: true,
                                       itemCount: snapshot.data![index].product.length,
@@ -175,7 +175,7 @@ class _MyservicesState extends State<Myservices> {
                                                       onPressed: () async {
                                                        bool check= await controller.deleteService(snapshot.data![index].id,snapshot.data![index].name,snapshot.data![index].product[item].productId);
                                                        if(check){
-                                                         Get.offAll(()=>Myservices());
+                                                         Get.offAll(()=>const Myservices());
                                                        }
                                                       },
                                                       icon: const Icon(Icons.delete)),
