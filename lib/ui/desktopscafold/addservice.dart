@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:admin_panel/controller/service_controller.dart';
 import 'package:admin_panel/ui/desktopscafold/singleton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,8 +11,6 @@ import 'package:intl/intl.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:path/path.dart' as path;
 import 'package:path/path.dart';
-
-
 
 class Addservice extends StatefulWidget {
   const Addservice({super.key});
@@ -26,7 +25,7 @@ class _AddserviceState extends State<Addservice> {
       FirebaseFirestore.instance.collection('services');
 
   List<DropdownMenuItem<String>> dropdownItems = [];
-  String? selectedServiceId='';
+  String? selectedServiceId = '';
 
   List<ServiceModel> services = [];
   ServiceModel? selectedService;
@@ -48,20 +47,16 @@ class _AddserviceState extends State<Addservice> {
     //dropdownvalue=snapshot.docs.first.id;
     for (var doc in snapshot.docs) {
       print(doc.id);
-     // print(doc);
-    //  print(doc.get('name'));
+      // print(doc);
+      //  print(doc.get('name'));
       // Create a DropdownMenuItem and add it to the list
-      services.add(ServiceModel(doc.id,doc.get('name')));
+      services.add(ServiceModel(doc.id, doc.get('name')));
     }
 
-    Singleton.instance.selectedService=services.first;
-    Singleton.instance.selectedIndex=services.first.id;
-
+    Singleton.instance.selectedService = services.first;
+    Singleton.instance.selectedIndex = services.first.id;
 
     return services;
-
-
-
   }
 
   final _serviceController = TextEditingController();
@@ -74,174 +69,129 @@ class _AddserviceState extends State<Addservice> {
         title: const Center(child: Text('Add Services')),
         backgroundColor: Colors.grey[900],
       ),
-      body:
-      FutureBuilder(
-        future: getServices(),
-        builder: (context, snapshot) {
-          if(snapshot.hasError){
-            return Text("error in koadinb data");
-          }
-          if(snapshot.hasData) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // DropdownButton(
-                //   // Initial Value
-                //   value: dropdownvalue,
-                //
-                //   // Down Arrow Icon
-                //   icon: const Icon(Icons.keyboard_arrow_down),
-                //
-                //   // Array list of items
-                //   items: snapshot.data?.map((ServiceModel items) {
-                //     return DropdownMenuItem(
-                //       value: items.id,
-                //       child: Text(items.serviceName,
-                //         style: TextStyle(color: Colors.black),),
-                //     );
-                //   }).toList(),
-                //   // After selecting the desired option,it will
-                //   // change button value to selected value
-                //   onChanged: (dynamic newValue) {
-                //     setState(() {
-                //       dropdownvalue = newValue;
-                //     });
-                //   },
-                // ),
-                DropdownButton<ServiceModel>(
-                  value:Singleton.instance.selectedService,
-                  hint: Text('Select a service'),
-                  onChanged: (ServiceModel? newValue) {
-                    setState(() {
-                      Singleton.instance.selectedIndex  = newValue?.id;
-                      Singleton.instance.selectedService=newValue;
-                      print(Singleton.instance.selectedIndex);
-                      print(Singleton.instance.selectedService?.serviceName);
-                    });
-                  },
-                  items: services.map<DropdownMenuItem<ServiceModel>>((ServiceModel service) {
-                    return DropdownMenuItem<ServiceModel>(
-                      value: service,
-                      child: Text(service.serviceName),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                selectedImage != null
-                    ? SizedBox(
+      body: FutureBuilder(
+          future: getServices(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text("error in koadinb data");
+            }
+            if (snapshot.hasData) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  DropdownButton<ServiceModel>(
+                    value: Singleton.instance.selectedService,
+                    hint: Text('Select a service'),
+                    onChanged: (ServiceModel? newValue) {
+                      setState(() {
+                        Singleton.instance.selectedIndex = newValue?.id;
+                        Singleton.instance.selectedService = newValue;
+                        print(Singleton.instance.selectedIndex);
+                        print(Singleton.instance.selectedService?.serviceName);
+                      });
+                    },
+                    items: services.map<DropdownMenuItem<ServiceModel>>(
+                        (ServiceModel service) {
+                      return DropdownMenuItem<ServiceModel>(
+                        value: service,
+                        child: Text(service.serviceName),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  selectedImage != null
+                      ? SizedBox(
+                          height: 200,
+                          width: 200,
+                          child: Image.network(selectedImage!.path))
+                      : InkWell(
+                          onTap: () async {
+                            final ImagePicker picker = ImagePicker();
+
+                            final XFile? image = await picker.pickImage(
+                                source: ImageSource.gallery);
+
+                            //  final XFile? photo = await picker.pickImage(source: ImageSource.camera);
+
+                            if (kIsWeb) {
+                              Image.network(image!.path);
+                              setState(() {
+                                selectedImage = image;
+                              });
+                            } else {
+                              Image.file(File(image!.path));
+                              setState(() {
+                                selectedImage = image;
+                              });
+                            }
+                          },
+                          child: Container(
+                            height: 200,
+                            width: 200,
+                            color: Colors.white,
+                            child: const Center(
+                              child: Text('Select Image'),
+                            ),
+                          ),
+                        ),
+                  SizedBox(
                     height: 200,
                     width: 200,
-                    child: Image.network(selectedImage!.path))
-                    : InkWell(
-                  onTap: () async {
-                    final ImagePicker picker = ImagePicker();
-
-                    final XFile? image =
-                    await picker.pickImage(source: ImageSource.gallery);
-
-                    //  final XFile? photo = await picker.pickImage(source: ImageSource.camera);
-
-                    if (kIsWeb) {
-                      Image.network(image!.path);
-                      setState(() {
-                        selectedImage = image;
-                      });
-                    } else {
-                      Image.file(File(image!.path));
-                      setState(() {
-                        selectedImage = image;
-                      });
-                    }
-                  },
-                  child: Container(
-                    height: 200,
-                    width: 200,
-                    color: Colors.white,
-                    child: const Center(
-                      child: Text('Select Image'),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextFormField(
+                          controller: _serviceController,
+                          keyboardType: TextInputType.name,
+                          decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.grey,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            hintText: 'Enter Services Name',
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            String serviceId = createIdFromDateTime();
+                            String category = selectedServiceId!;
+                            String serviceName = _serviceController.text;
+                            String serviceImage = await uploadFile();
+                            ServiceController().addService(
+                                Singleton.instance.selectedService!, {
+                              'product_id': serviceId,
+                              'product_image': serviceImage,
+                              'product_name': serviceName
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey[900],
+                          ),
+                          child: Text('Save Service'),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 200,
-                  width: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextFormField(
-                        controller: _serviceController,
-                        keyboardType: TextInputType.name,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.grey,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.grey,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          hintText: 'Enter Services Name',
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          String serviceId = createIdFromDateTime();
-                          String category = selectedServiceId!;
-                          String serviceName = _serviceController.text;
-                          String serviceImage = await uploadFile();
-                          saveData( {
-                            'product_id': serviceId,
-                            'product_image': serviceImage,
-                            'product_name': serviceName
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[900],
-                        ),
-                        child: Text('Save Service'),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }
+                ],
+              );
+            }
             return Center(child: CircularProgressIndicator());
-
-        }
-      ),
+          }),
     );
-  }
-
-  Future<void> saveData(Map<String,dynamic> productData) async {
-    try {
-      CollectionReference serviceRef =
-      FirebaseFirestore.instance.collection('services');
-      DocumentReference serviceDocRef = serviceRef.doc(Singleton.instance.selectedService!.id);
-      DocumentSnapshot documentSnapshot = await serviceDocRef.get();
-      if (documentSnapshot.exists) {
-       // documentSnapshot.get(field)
-        FieldPath fieldPath = FieldPath(const ['product']);
-        List<dynamic> existingProducts = documentSnapshot.get(fieldPath) as List<dynamic>?? [];
-        List<dynamic> updatedProducts = [...existingProducts, productData];
-
-        await serviceDocRef.set({'id':Singleton.instance.selectedService!.id,'name':Singleton.instance.selectedService!.serviceName,'product': updatedProducts});
-      }
-
-     // await serviceDocRef.set({'products': productData});
-    } catch (e) {
-      print('Error: $e');
-    }
   }
 
   String createIdFromDateTime() {
@@ -249,8 +199,6 @@ class _AddserviceState extends State<Addservice> {
     String formattedDateTime = DateFormat('yyyyMMddHHmmss').format(now);
     return formattedDateTime;
   }
-
-
 
   Future<String> uploadFile() async {
     Uint8List bytes = await selectedImage!.readAsBytes();
