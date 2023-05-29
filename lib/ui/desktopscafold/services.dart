@@ -1,11 +1,8 @@
-import 'dart:io';
 import 'package:admin_panel/models/service_list_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../../controller/service_controller.dart';
 import 'addservice.dart';
 import 'deskhome.dart';
@@ -22,8 +19,7 @@ class Myservices extends StatefulWidget {
 }
 
 class _MyservicesState extends State<Myservices> {
-
-  ServiceController controller=ServiceController();
+  ServiceController controller = ServiceController();
   final FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
   XFile? selectedImage;
