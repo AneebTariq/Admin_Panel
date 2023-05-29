@@ -17,8 +17,9 @@ class Deskhome extends StatefulWidget {
 }
 
 class _DeskhomeState extends State<Deskhome> {
-  final Query<Map<String, dynamic>> usersCollection =
-      FirebaseFirestore.instance.collection('ServiceRequest');
+  final Query<Map<String, dynamic>> usersCollection = FirebaseFirestore.instance
+      .collection('ServiceRequest')
+      .where('status', isEqualTo: 'pending');
 
   final Query<Map<String, dynamic>> aprovedrequest = FirebaseFirestore.instance
       .collection('ServiceRequest')

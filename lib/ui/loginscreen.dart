@@ -1,5 +1,4 @@
 import 'package:admin_panel/repository/homecontroller.dart';
-import 'package:admin_panel/ui/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -141,20 +140,6 @@ class _AdminLoginState extends State<AdminLogin> {
                       ),
                       const SizedBox(
                         height: 50,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text("Don't Have Account ?"),
-                          TextButton(
-                              onPressed: () {
-                                Get.offAll(() => const AdminSignup());
-                              },
-                              child: const Text(
-                                'Sign Up',
-                                style: TextStyle(color: Colors.blue),
-                              ))
-                        ],
                       ),
                     ],
                   ),
