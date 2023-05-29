@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'chat_screen.dart';
 import 'services.dart';
 
 class Deskhome extends StatefulWidget {
@@ -303,47 +304,83 @@ class _DeskhomeState extends State<Deskhome> {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Card(
-                                  child: ListTile(
-                                leading: Text(
-                                    snapshot.data!.docs[index]['user_name']),
-                                title: Text('Service Name: ' +
-                                    snapshot.data!.docs[index]['service_name']),
-                                subtitle: Text('Date & Time: ' +
-                                    snapshot.data!.docs[index]['service_date'] +
-                                    "  " +
-                                    snapshot.data!.docs[index]['service_time']),
-                                trailing: ElevatedButton(
-                                    onPressed: () {
-                                      String requeststatus = 'completed';
-                                      String mydate = snapshot.data!.docs[index]
-                                          ['service_date'];
-                                      String mytime = snapshot.data!.docs[index]
-                                          ['service_time'];
-                                      String myemail = snapshot
-                                          .data!.docs[index]['user_email'];
-                                      FirebaseFirestore.instance
-                                          .collection('ServiceRequest')
-                                          .where('service_date',
-                                              isEqualTo: mydate)
-                                          .where('service_time',
-                                              isEqualTo: mytime)
-                                          .where('user_email',
-                                              isEqualTo: myemail)
-                                          .get()
-                                          .then((querySnapshot) {
-                                        querySnapshot.docs
-                                            // ignore: avoid_function_literals_in_foreach_calls
-                                            .forEach((documentSnapshot) {
-                                          documentSnapshot.reference.update(
-                                              {'status': requeststatus});
-                                        });
-                                      });
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.greenAccent,
-                                    ),
-                                    child: const Text('Completed')),
-                              )),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(
+                                            snapshot.data!.docs[index]['user_name']),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                                          children: [
+                                          Text('Service Name: ' +
+                                              snapshot.data!.docs[index]['service_name']),
+                                          Text('Date & Time: ' +
+                                              snapshot.data!.docs[index]['service_date'] +
+                                              "  " +
+                                              snapshot.data!.docs[index]['service_time']),
+
+
+                                        ],),
+                                        Row(
+                                          children: [
+                                            ElevatedButton(
+                                                onPressed: () {
+
+                                                  Get.to(()=>OrderChatPage(
+                                                      requestId:snapshot
+                                                          .data!.docs[index]['uId'],
+                                                     theirName: snapshot
+                                                          .data!.docs[index]['user_name']
+                                                  ));
+
+
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.greenAccent,
+                                                ),
+                                                child: const Text('Chat')),
+                                            SizedBox(width: 10,),
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  String requeststatus = 'completed';
+                                                  String mydate = snapshot.data!.docs[index]
+                                                  ['service_date'];
+                                                  String mytime = snapshot.data!.docs[index]
+                                                  ['service_time'];
+                                                  String myemail = snapshot
+                                                      .data!.docs[index]['user_email'];
+                                                  FirebaseFirestore.instance
+                                                      .collection('ServiceRequest')
+                                                      .where('service_date',
+                                                      isEqualTo: mydate)
+                                                      .where('service_time',
+                                                      isEqualTo: mytime)
+                                                      .where('user_email',
+                                                      isEqualTo: myemail)
+                                                      .get()
+                                                      .then((querySnapshot) {
+                                                    querySnapshot.docs
+                                                    // ignore: avoid_function_literals_in_foreach_calls
+                                                        .forEach((documentSnapshot) {
+                                                      documentSnapshot.reference.update(
+                                                          {'status': requeststatus});
+                                                    });
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.greenAccent,
+                                                ),
+                                                child: const Text('Completed')),
+                                          ],
+                                        ),
+                                      ],
+
+                              ),
+                                  )),
                             );
                           }),
                     );
