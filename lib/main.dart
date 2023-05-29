@@ -14,6 +14,7 @@ void main() async {
       messagingSenderId: "355123910535",
       projectId: "instant-services-28b10",
       storageBucket: "instant-services-28b10.appspot.com",
+      databaseURL: "https://instant-services-28b10-default-rtdb.firebaseio.com",
     ),
   );
   runApp(const MyApp());
