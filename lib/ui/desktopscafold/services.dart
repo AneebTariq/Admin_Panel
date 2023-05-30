@@ -122,71 +122,74 @@ class _MyservicesState extends State<Myservices> {
                       ),
 
                       Expanded(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
 
-                            return  SizedBox(
-                              height: 400,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              return
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
 
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left:30.0),
-                                    child: Text(snapshot.data![index].name,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18
-                                    ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10,),
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                      itemCount: snapshot.data![index].product.length,
-                                      itemBuilder: (context,item){
-                                      return Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 30.0),
-                                        child: Card(
-                                          child: ListTile(
-                                            leading: const Icon(Icons.image),
-                                            title:  Text(snapshot.data![index].product[item].productName),
-                                            trailing: SizedBox(
-                                              width: 100,
-                                              child: Row(
-                                                children: [
-                                                  IconButton(
-                                                      onPressed: () {
-                                                        Get.to(()=>EditService(
-                                                          service:snapshot.data![index],
-                                                          product:snapshot.data![index].product[item]
-                                                        ));
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
+                                        child: Text(snapshot.data![index].name+": ",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18
+                                        ),
+                                        ),
+                                      ),
+                                     // const SizedBox(height: 10,),
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                          itemCount: snapshot.data![index].product.length,
+                                          itemBuilder: (context,item){
+                                          return Container(
+                                            // padding: const EdgeInsets.symmetric(
+                                            //     horizontal: 30.0),
+                                            child: Card(
+                                              child: ListTile(
+                                                leading: const Icon(Icons.image),
+                                                title:  Text(snapshot.data![index].product[item].productName),
+                                                trailing: SizedBox(
+                                                  width: 100,
+                                                  child: Row(
+                                                    children: [
+                                                      IconButton(
+                                                          onPressed: () {
+                                                            Get.to(()=>EditService(
+                                                              service:snapshot.data![index],
+                                                              product:snapshot.data![index].product[item]
+                                                            ));
 
-                                                      },
-                                                      icon: const Icon(Icons.edit)),
-                                                  IconButton(
-                                                      onPressed: () async {
-                                                       bool check= await controller.deleteService(snapshot.data![index].id,snapshot.data![index].name,snapshot.data![index].product[item].productId);
-                                                       if(check){
-                                                         Get.offAll(()=>const Myservices());
-                                                       }
-                                                      },
-                                                      icon: const Icon(Icons.delete)),
-                                                ],
+                                                          },
+                                                          icon: const Icon(Icons.edit)),
+                                                      IconButton(
+                                                          onPressed: () async {
+                                                           bool check= await controller.deleteService(snapshot.data![index].id,snapshot.data![index].name,snapshot.data![index].product[item].productId);
+                                                           if(check){
+                                                             Get.offAll(()=>const Myservices());
+                                                           }
+                                                          },
+                                                          icon: const Icon(Icons.delete)),
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                ],
-                              ),
-                            );
+                                          );
+                                        }),
+                                    ],
+                                  ),
+                                );
 
-                            }),
+                              }),
+                        ),
                       ),
                     ],
                   ),
