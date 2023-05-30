@@ -54,8 +54,8 @@ class _AddserviceState extends State<Addservice> {
       services.add(ServiceModel(doc.id, doc.get('name')));
     }
 
-    Singleton.instance.selectedService = services.first;
-    Singleton.instance.selectedIndex = services.first.id;
+    // Singleton.instance.selectedService = services.first;
+    // Singleton.instance.selectedIndex = services.first.id;
 
     return services;
   }
@@ -207,22 +207,29 @@ class _AddserviceState extends State<Addservice> {
                               width: MediaQuery.of(context).size.width * 0.35,
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  String serviceId = createIdFromDateTime();
-                                  // ignore: unused_local_variable
-                                  String category = selectedServiceId!;
-                                  String serviceName = _serviceController.text;
-                                  String serviceImage = await uploadFile();
-                                  bool check = await ServiceController()
-                                      .addService(
-                                          Singleton.instance.selectedService!, {
-                                    'product_id': serviceId,
-                                    'product_image': serviceImage,
-                                    'product_name': serviceName
-                                  });
-                                  if (check) {
+                                  if(Singleton.instance.selectedService!=null) {
+                                    String serviceId = createIdFromDateTime();
+                                    // ignore: unused_local_variable
+                                    String category = selectedServiceId!;
+                                    String serviceName = _serviceController
+                                        .text;
+                                    String serviceImage = await uploadFile();
+                                    bool check = await ServiceController()
+                                        .addService(
+                                        Singleton.instance.selectedService!, {
+                                      'product_id': serviceId,
+                                      'product_image': serviceImage,
+                                      'product_name': serviceName
+                                    });
+
+                                    if (check) {
+                                      Fluttertoast.showToast(
+                                          msg: "Service added Successfully!");
+                                      Get.offAll(() => const Myservices());
+                                    }
+                                  }else{
                                     Fluttertoast.showToast(
-                                        msg: "Service added Successfully!");
-                                    Get.offAll(() => const Myservices());
+                                        msg: "Choose any category First!");
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
