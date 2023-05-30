@@ -306,11 +306,11 @@ class _DeskhomeState extends State<Deskhome> {
                               padding: const EdgeInsets.all(8.0),
                               child: Card(
                                   child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(10.0),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                      MainAxisAlignment.spaceAround,
                                   children: [
                                     Text(snapshot.data!.docs[index]
                                         ['user_name']),
