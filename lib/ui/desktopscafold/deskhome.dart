@@ -2,11 +2,9 @@
 
 import 'package:admin_panel/ui/desktopscafold/feedback.dart';
 import 'package:admin_panel/ui/desktopscafold/history.dart';
-import 'package:admin_panel/ui/desktopscafold/messagescreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'chat_screen.dart';
 import 'services.dart';
 
@@ -49,16 +47,7 @@ class _DeskhomeState extends State<Deskhome> {
                 ListTile(
                   leading: const Icon(Icons.home),
                   title: const Text('D A S H B O A R D'),
-                  onTap: () {
-                    //
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.message_outlined),
-                  title: const Text('M E S S A G E S'),
-                  onTap: () {
-                    Get.to(() => const Messagescreen());
-                  },
+                  onTap: () {},
                 ),
                 ListTile(
                   leading: const Icon(Icons.history),
